@@ -132,7 +132,7 @@ $sqlmy fezonline -e "select * from fez_config"
 $sqlmy fezonline -e "update fez_config set config_value='http://epustakalaya/fez/' where config_name='app_url'"
 $sqlmy fezonline -e "update fez_config set config_value='epustakalaya' where config_name='app_hostname'"
 
-wget -O /etc/mysql/my.cnf http://hg.olenepal.org/NEXS0.7/raw-file/ce774e3b3af7/my.cnf
+#wget -O /etc/mysql/my.cnf http://hg.olenepal.org/NEXS0.7/raw-file/ce774e3b3af7/my.cnf
 
 chown -R www-data:www-data /var/www/fez/
 
