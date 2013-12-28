@@ -39,14 +39,17 @@ echo "mysql-server-5.5 mysql-server/root_password password $mysql_password" | de
 echo "mysql-server-5.5 mysql-server/root_password_again password $mysql_password" | debconf-set-selections
 apt-get -y install mysql-client mysql-server libmysql-java libimage-exiftool-perl apache2 php5 php5-mysql php-pear php-xml-htmlsax3 php-xml-parser php5-curl php5-gd php5-mcrypt 
 echo "Done installing LAMP packages"
+cp /etc/apt/sources.list.raring /etc/apt/sources.list
+cp /etc/apt/sources.list.d/* /etc/apt/sources.list.d/
+apt-get update
 clear
 sleep 2
 
-echo "Installing links and vim"
-apt-get -y install links
-clear
-echo "Done installing links and vim"
-sleep 1
+#echo "Installing links and vim"
+#apt-get -y install links
+#clear
+#echo "Done installing links and vim"
+#sleep 1
 
 wget -O /etc/profile.d/fedora-profile.sh https://gist.github.com/Avasz/7576577/raw/08bbed9fadde300cb0364accb0201d0eea24bed2/fedora-profile.sh
 chmod 755 /etc/profile.d/fedora-profile.sh
@@ -63,6 +66,7 @@ sleep 2
 
 echo "Insert the nexc disk in the odroid, and press any key when ready...."
 read
+sleep 10
 mount /dev/sda1 /mnt/
 
 $sqlmy -e "CREATE DATABASE fezonline default character set utf8"
@@ -135,10 +139,11 @@ sleep 2
 clear
 
 echo "Setting fez for application url..."
-$sqlmy -e "use fezonline"
-$sqlmy fezonline -e "select * from fez_config"
-$sqlmy fezonline -e "update fez_config set config_value='http://epustakalaya/fez/' where config_name='app_url'"
-$sqlmy fezonline -e "update fez_config set config_value='epustakalaya' where config_name='app_hostname'"
+
+echo "use fezonline;
+select * from fez_config;
+update fez_config set config_value='http://epustakalaya/fez/' where config_name='app_url';
+update fez_config set config_value='epustakalaya' where config_name='app_hostname';" | $sqlmy
 
 chown -R www-data:www-data /var/www/fez/
 
@@ -146,6 +151,14 @@ echo epustakalaya > /etc/hostname
 hostname epustakalaya
 
 wget -O /etc/mysql/my.cnf https://gist.github.com/Avasz/8144562/raw/9dced13d1e57c3f7feda30d353a30ce70511e036/my.cnf
+
+mkdir /library && cd $_ && mkdir www && cd $_ && mkdir external-content
+chown www-data:www-data /library/www/external-content
+wget -O /etc/apache2/conf.d/external.conf https://gist.github.com/Avasz/8157606/raw/7b8caffd717a10e30dc0d1a552eadc157240de63/external.conf
+
+tar -xvj /mnt/nexc-sabdakosh -C /var/www/fez/
+
+
 /etc/init.d/apache2 restart
 /etc/init.d/mysql restart
 /etc/init.d/fedora restart
